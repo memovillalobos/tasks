@@ -26,7 +26,19 @@ class TasksController extends Controller
 
     public function import()
     {
-      
+      $file_contents = file_get_contents($_FILES['file']['tmp_name']);
+      $tasks = explode("\r\n", $file_contents);
+      foreach($tasks as $task){
+
+        $task = explode(",", $task);
+        \App\Task::create([
+          'task'        => $task[0],
+          'responsible' => $task[1],
+          'estimate'    => $task[2],
+          'status'      => $task[3],
+        ]);
+      }
+      return redirect()->route('tasks.index');
     }
 
     public function update($task_id)
