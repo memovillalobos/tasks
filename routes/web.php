@@ -11,6 +11,22 @@
 |
 */
 
-Route::get('/', function () {
-  return view('tasks');
-});
+Route::get('tasks', [
+  'uses' => 'TasksController@index',
+  'as' => 'tasks.index'
+]);
+
+Route::post('tasks', [
+  'uses' => 'TasksController@store',
+  'as' => 'tasks.store'
+]);
+
+Route::post('tasks/import', [
+  'uses' => 'TasksController@import',
+  'as' => 'tasks.import'
+]);
+
+Route::put('tasks/{task_id}', [
+  'uses' => 'TasksController@update',
+  'as' => 'tasks.update'
+]);

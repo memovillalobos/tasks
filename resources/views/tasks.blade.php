@@ -32,15 +32,23 @@
               <h4>To Do</h4>
             </div>
             <div class="card-body">
-              <div class="card">
-                <div class="card-body">
-                  <span class="badge badge-secondary float-right">4 minutes</span>
-                  Create a new project using composer
+              @foreach($tasks as $task)
+                @if($task->status == 'TO_DO')
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <span class="badge badge-secondary float-right">{{ $task->estimate }} minutes</span>
+                    {{ $task->task }}
+                  </div>
+                  <div class="card-footer text-right">
+                    <form method="post" action="{{ route('tasks.update', [ $task->id ]) }}">
+                      {{ csrf_field() }}
+                      {{ method_field('put') }}
+                      <button type="submit" class="btn btn-sm btn-primary">Move to In Progress</button>
+                    </form>
+                  </div>
                 </div>
-                <div class="card-footer text-right">
-                  <button type="button" class="btn btn-sm btn-primary">Move to in-progress</button>
-                </div>
-              </div>
+                @endif
+              @endforeach
             </div>
           </div>
         </div>
@@ -50,7 +58,23 @@
               <h4>In Progress</h4>
             </div>
             <div class="card-body">
-
+              @foreach($tasks as $task)
+                @if($task->status == 'IN_PROGRESS')
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <span class="badge badge-secondary float-right">{{ $task->estimate }} minutes</span>
+                    {{ $task->task }}
+                  </div>
+                  <div class="card-footer text-right">
+                    <form method="post" action="{{ route('tasks.update', [ $task->id ]) }}">
+                      {{ csrf_field() }}
+                      {{ method_field('put') }}
+                      <button type="submit" class="btn btn-sm btn-primary">Move to QA</button>
+                    </form>
+                  </div>
+                </div>
+                @endif
+              @endforeach
             </div>
           </div>
         </div>
@@ -60,7 +84,23 @@
               <h4>QA</h4>
             </div>
             <div class="card-body">
-
+              @foreach($tasks as $task)
+                @if($task->status == 'QA')
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <span class="badge badge-secondary float-right">{{ $task->estimate }} minutes</span>
+                    {{ $task->task }}
+                  </div>
+                  <div class="card-footer text-right">
+                    <form method="post" action="{{ route('tasks.update', [ $task->id ]) }}">
+                      {{ csrf_field() }}
+                      {{ method_field('put') }}
+                      <button type="submit" class="btn btn-sm btn-primary">Move to Done</button>
+                    </form>
+                  </div>
+                </div>
+                @endif
+              @endforeach
             </div>
           </div>
         </div>
@@ -70,7 +110,23 @@
               <h4>Done</h4>
             </div>
             <div class="card-body">
-
+              @foreach($tasks as $task)
+                @if($task->status == 'DONE')
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <span class="badge badge-secondary float-right">{{ $task->estimate }} minutes</span>
+                    {{ $task->task }}
+                  </div>
+                  <div class="card-footer text-right">
+                    <form method="post" action="{{ route('tasks.update', [ $task->id ]) }}">
+                      {{ csrf_field() }}
+                      {{ method_field('put') }}
+                      <button type="submit" class="btn btn-sm btn-primary">Remove from board</button>
+                    </form>
+                  </div>
+                </div>
+                @endif
+              @endforeach
             </div>
           </div>
         </div>
@@ -81,31 +137,32 @@
     <div class="modal fade" id="createTaskModal" tabindex="-1" role="dialog" aria-labelledby="createTaskModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <form>
-          <div class="modal-header">
-            <h5 class="modal-title" id="createTaskModalLabel">Create New Task</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="task">Task:</label>
-              <input type="text" class="form-control" id="task" name="task" placeholder="Write a task description here...">
+          <form method="post" action="{{ route('tasks.store') }}">
+            {{ csrf_field() }}
+            <div class="modal-header">
+              <h5 class="modal-title" id="createTaskModalLabel">Create New Task</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
-            <div class="form-group">
-              <label for="responsible">Responsible:</label>
-              <input type="text" class="form-control" id="responsible" name="responsible" placeholder="Set the name of the task owner here...">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="task">Task:</label>
+                <input type="text" class="form-control" id="task" name="task" placeholder="Write a task description here...">
+              </div>
+              <div class="form-group">
+                <label for="responsible">Responsible:</label>
+                <input type="text" class="form-control" id="responsible" name="responsible" placeholder="Set the name of the task owner here...">
+              </div>
+              <div class="form-group">
+                <label for="estimate">Duration:</label>
+                <input type="text" class="form-control" id="estimate" name="estimate" placeholder="Enter a time estimation for the task...">
+              </div>
             </div>
-            <div class="form-group">
-              <label for="estimation">Duration:</label>
-              <input type="text" class="form-control" id="estimation" name="estimation" placeholder="Enter a time estimation for the task...">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Create Task</button>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Create Task</button>
-          </div>
           </form>
         </div>
       </div>
