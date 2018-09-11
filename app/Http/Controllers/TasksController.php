@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use Request;
+use Validator;
+use File;
 
 class TasksController extends Controller
 {
@@ -15,26 +18,25 @@ class TasksController extends Controller
 
     public function store()
     {
-
       // Validate input
-      if(empty($_POST['task']) ||
-        empty($_POST['responsible']) ||
-        empty($_POST['estimate'])){
+      $validator = Validator::make(Request::all(), [
+        'task' => 'required',
+        'responsible' => 'required',
+        'estimate' => 'required'
+      ]);
+      if($validator->fails()){
           // If any value is missing, return with redirect() and error
           return redirect()->route('tasks.index')
-            ->withErrors('All fields are required when creating a new task...');
+            ->withErrors($validator)->withInput();
       }
 
       // Insert the task in the database
-      \App\Task::create([
-        'task'        => $_POST['task'],
-        'responsible' => $_POST['responsible'],
-        'estimate'    => $_POST['estimate'],
-        'status'      => 'TO_DO'
+      \App\Task::create(Request::all()+[
+        'status' => 'TO_DO'
       ]);
 
       // Notify the user
-      mail($_POST['responsible'], 'New task', 'A new task has
+      mail(Request::get('responsible'), 'New task', 'A new task has
       been assigned to you. Go online to check the details of this task',
        "From: webmaster@example.com");
 
@@ -44,10 +46,10 @@ class TasksController extends Controller
 
     public function import()
     {
-      $file_contents = file_get_contents($_FILES['file']['tmp_name']);
+
+      $file_contents = File::get(Request::file('file')->getPathname());
       $tasks = explode("\r\n", $file_contents);
       foreach($tasks as $task){
-
         $task = explode(",", $task);
         \App\Task::create([
           'task'        => $task[0],
@@ -84,7 +86,7 @@ class TasksController extends Controller
       }
 
       // Notify the user
-      mail($_POST['responsible'], 'Updated task', 'One of your tasks has been
+      mail($task->responsible, 'Updated task', 'One of your tasks has been
       updated. Go online to check the details of this task',
        "From: webmaster@example.com");
 
