@@ -15,12 +15,30 @@ class TasksController extends Controller
 
     public function store()
     {
+
+      // Validate input
+      if(empty($_POST['task']) ||
+        empty($_POST['responsible']) ||
+        empty($_POST['estimate'])){
+          // If any value is missing, return with redirect() and error
+          return redirect()->route('tasks.index')
+            ->withErrors('All fields are required when creating a new task...');
+      }
+
+      // Insert the task in the database
       \App\Task::create([
         'task'        => $_POST['task'],
         'responsible' => $_POST['responsible'],
         'estimate'    => $_POST['estimate'],
         'status'      => 'TO_DO'
       ]);
+
+      // Notify the user
+      mail($_POST['responsible'], 'New task', 'A new task has
+      been assigned to you. Go online to check the details of this task',
+       "From: webmaster@example.com");
+
+      // Return to the task list
       return redirect()->route('tasks.index');
     }
 
@@ -64,6 +82,12 @@ class TasksController extends Controller
           'status' => 'DELETED'
         ]);
       }
+
+      // Notify the user
+      mail($_POST['responsible'], 'Updated task', 'One of your tasks has been
+      updated. Go online to check the details of this task',
+       "From: webmaster@example.com");
+
       return redirect()->route('tasks.index');
     }
 }

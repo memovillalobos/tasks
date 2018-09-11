@@ -25,6 +25,12 @@
         </div>
       </div>
 
+      @if($errors->any())
+      <div class="alert alert-danger mt-2">
+        {{ $errors->first() }}
+      </div>
+      @endif
+
       <div class="row mt-4">
         <div class="col-md-3">
           <div class="card">
