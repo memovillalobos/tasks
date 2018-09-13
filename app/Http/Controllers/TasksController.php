@@ -18,6 +18,7 @@ class TasksController extends Controller
 
     public function store()
     {
+
       // Validate input
       $validator = Validator::make(Request::all(), [
         'task' => 'required',
@@ -30,10 +31,36 @@ class TasksController extends Controller
             ->withErrors($validator)->withInput();
       }
 
-      // Insert the task in the database
-      \App\Task::create(Request::all()+[
-        'status' => 'TO_DO'
-      ]);
+      // Create the task
+      switch(Request::get('type')){
+        case config('constants.TASK_TYPES.TASK'):
+          \App\Task::create([
+            'type' => Request::get('type'),
+            'task' => Request::get('task'),
+            'responsible' => Request::get('responsible'),
+            'estimate' => Request::get('estimate'),
+            'status' => 'TO_DO'
+          ]);
+          break;
+        case config('constants.TASK_TYPES.EPIC'):
+          \App\Task::create([
+            'type' => Request::get('type'),
+            'task' => Request::get('task'),
+            'status' => 'TO_DO'
+          ]);
+          break;
+        case config('constants.TASK_TYPES.BUG'):
+          \App\Task::create([
+            'type' => Request::get('type'),
+            'task' => Request::get('task'),
+            'responsible' => Request::get('responsible'),
+            'estimate' => Request::get('estimate'),
+            'platform' => Request::get('platform'),
+            'version' => Request::get('version'),
+            'status' => 'TO_DO'
+          ]);
+          break;
+      }
 
       // Notify the user
       mail(Request::get('responsible'), 'New task', 'A new task has
@@ -49,14 +76,39 @@ class TasksController extends Controller
 
       $file_contents = File::get(Request::file('file')->getPathname());
       $tasks = explode("\r\n", $file_contents);
+
       foreach($tasks as $task){
         $task = explode(",", $task);
-        \App\Task::create([
-          'task'        => $task[0],
-          'responsible' => $task[1],
-          'estimate'    => $task[2],
-          'status'      => $task[3],
-        ]);
+        $is_subtask = $task[5];
+        switch($task[0]){
+          case config('constants.TASK_TYPES.TASK'):
+            \App\Task::create([
+              'type'        => $task[0],
+              'task'        => $task[1],
+              'responsible' => $task[2],
+              'estimate'    => $task[3],
+              'status'      => $task[4],
+              'task_id'     => $is_subtask ? $last_task->id : NULL
+            ]);
+          break;
+          case config('constants.TASK_TYPES.EPIC'):
+            $last_task = \App\Task::create([
+              'type'        => $task[0],
+              'task'        => $task[1],
+              'status'      => $task[4],
+            ]);
+          break;
+          case config('constants.TASK_TYPES.BUG'):
+            \App\Task::create([
+              'type'        => $task[0],
+              'task'        => $task[1],
+              'responsible' => $task[2],
+              'estimate'    => $task[3],
+              'status'      => $task[4],
+              'task_id'     => $is_subtask ? $last_task->id : NULL
+            ]);
+          break;
+        }
       }
       return redirect()->route('tasks.index');
     }
