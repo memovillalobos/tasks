@@ -19,7 +19,10 @@
               <span class="sr-only">Toggle Dropdown</span>
             </button>
             <div class="dropdown-menu">
-              <button class="dropdown-item" data-toggle="modal" data-target="#importFileModal" href="#">Import from file</button>
+              <button class="dropdown-item" data-toggle="modal" data-target="#createEpicModal">Create a new epic</button>
+              <button class="dropdown-item" data-toggle="modal" data-target="#reportBugModal">Report a bug</button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" data-toggle="modal" data-target="#importFileModal">Import from file</button>
             </div>
           </div>
         </div>
@@ -149,6 +152,7 @@
         <div class="modal-content">
           <form method="post" action="{{ route('tasks.store') }}">
             {{ csrf_field() }}
+            <input type="hidden" name="type" value="{{ config('constants.TASK_TYPES.TASK') }}" />
             <div class="modal-header">
               <h5 class="modal-title" id="createTaskModalLabel">Create New Task</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -172,6 +176,77 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-primary">Create Task</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Create Epic Modal -->
+    <div class="modal fade" id="createEpicModal" tabindex="-1" role="dialog" aria-labelledby="createEpicModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form method="post" action="{{ route('tasks.store') }}">
+            {{ csrf_field() }}
+            <input type="hidden" name="type" value="{{ config('constants.TASK_TYPES.EPIC') }}" />
+            <div class="modal-header">
+              <h5 class="modal-title" id="createEpicModalLabel">Create New Epic</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="task">Description:</label>
+                <input type="text" class="form-control" id="task" name="task" placeholder="Write an epic name here...">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Create Epic</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Bug Modal -->
+    <div class="modal fade" id="reportBugModal" tabindex="-1" role="dialog" aria-labelledby="reportBugModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form method="post" action="{{ route('tasks.store') }}">
+            {{ csrf_field() }}
+            <input type="hidden" name="type" value="{{ config('constants.TASK_TYPES.BUG') }}" />
+            <div class="modal-header">
+              <h5 class="modal-title" id="reportBugModalLabel">Create New Task</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="task">Bug:</label>
+                <input type="text" class="form-control" id="task" name="task" placeholder="Write a bug description here...">
+              </div>
+              <div class="form-group">
+                <label for="responsible">Responsible:</label>
+                <input type="text" class="form-control" id="responsible" name="responsible" placeholder="Set the name of the bug owner here...">
+              </div>
+              <div class="form-group">
+                <label for="estimate">Duration:</label>
+                <input type="text" class="form-control" id="estimate" name="estimate" placeholder="Enter a time estimation for the bug fix...">
+              </div>
+              <div class="form-group">
+                <label for="platform">Platform:</label>
+                <input type="text" class="form-control" id="platform" name="platform" placeholder="Enter the platform name affected by this bug...">
+              </div>
+              <div class="form-group">
+                <label for="version">Version:</label>
+                <input type="text" class="form-control" id="version" name="version" placeholder="Enter the platform version affected by this bug...">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-danger">Report Bug</button>
             </div>
           </form>
         </div>
